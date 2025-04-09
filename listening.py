@@ -5,26 +5,30 @@ class SpeechRecognizer:
 
     #This constructior will initialize the recognizer and set the energy threshold and pause threshold
     def __init__(self):
-        self.recognizer = sr.Recognizer()
-        self.recognizer.energy_threshold = 300  
-        self.recognizer.pause_threshold = 0.8  
+        self.recognizer = sr.Recognizer() 
+        self.recognizer.dynamic_energy_threshold = True
+        self.recognizer.dynamic_energy_adjustment_damping = 0.15
+        self.recognizer.dynamic_energy_ratio = 1.5
+        self.recognizer.pause_threshold = 1.2 
+        self.recognizer.energy_threshold = 300 
 
     #Function to adjust for ambient noise
     def adjust_for_ambient_noise(self):
         with sr.Microphone() as source:    
             print("Adjusting for ambient noise...")
-            self.recognizer.adjust_for_ambient_noise(source, duration=2)
+            self.recognizer.adjust_for_ambient_noise(source, duration=5)
             print("Ambient noise adjusted.")
+            time.sleep(0.5)
 
     #Continuously listen for speech and print the recognized text
     def listen(self):
         with sr.Microphone() as source:
             print("Listening...")           
             try:
-                audio = self.recognizer.listen(source, timeout=5,phrase_time_limit=10)
+                audio = self.recognizer.listen(source, timeout=10,phrase_time_limit=20)
                 try:
                     print("Recognizing...")
-                    text = self.recognizer.recognize_google(audio)
+                    text = self.recognizer.recognize_google(audio, language="en-US",show_all=False)
                     print(f"Recognized: {text}")
                     return text
                 except sr.UnknownValueError:
