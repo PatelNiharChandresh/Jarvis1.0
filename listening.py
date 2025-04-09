@@ -19,27 +19,26 @@ class SpeechRecognizer:
     #Continuously listen for speech and print the recognized text
     def listen(self):
         with sr.Microphone() as source:
-            print("Listening...")
-            while True:
+            print("Listening...")           
+            try:
+                audio = self.recognizer.listen(source, timeout=5,phrase_time_limit=10)
                 try:
-                    audio = self.recognizer.listen(source, timeout=5,phrase_time_limit=10)
-                    try:
-                        print("Recognizing...")
-                        text = self.recognizer.recognize_google(audio)
-                        print(f"Recognized: {text}")
-                    except sr.UnknownValueError:
-                        print("Sorry, I did not understand that.")
-                    except sr.RequestError as e:
-                        print(f"Could not request results; {e}")
+                    print("Recognizing...")
+                    text = self.recognizer.recognize_google(audio)
+                    print(f"Recognized: {text}")
+                    return text
+                except sr.UnknownValueError:
+                    print("Sorry, I did not understand that.")
+                except sr.RequestError as e:
+                    print(f"Could not request results; {e}")
                     
-                except sr.WaitTimeoutError:
-                    print("No speech detected within timeout")
-                except Exception as e:
-                        print(f"An error occurred: {e}")
-                except KeyboardInterrupt:
-                    print("\nStopping the speech recognition...")
-                    break
-                time.sleep(0.1)
+            except sr.WaitTimeoutError:
+                print("No speech detected within timeout")
+            except Exception as e:
+                print(f"An error occurred: {e}")
+            except KeyboardInterrupt:
+                print("\nStopping the speech recognition...")
+            time.sleep(0.1)
 
 if __name__ == "__main__":
     recognizer = SpeechRecognizer()
